@@ -49,7 +49,7 @@ objs += $(sobjs)
 	@rm -f $*.d.tmp
 
 $(target) : $(objs)
-	@$(AR) rcs $(target) $(objs)
+	@$(AR) -rcs $(target) $(objs)
 	
 # Compiler flags
 override CFLAGS        = --std=gnu99 -ffunction-sections -fdata-sections -mcall-prologues -mrelax -g -Wall -O$(OPTIMIZATION_LEVEL) -mmcu=$(MCU_TARGET) $(addprefix -D,$(DEFS)) $(addprefix -I,$(INCLUDE))
