@@ -16,7 +16,7 @@ target = ../$(LIBS_DIR)/$(LIBNAME)
 # Sources located at the top of the source tree.
 # Other sources are included by .mk files
 
-sources := croutine.c event_groups.c list.c queue.c tasks.c timers.c port.c heap/heap_$(FREERTOS_HEAP_MANAGER).c
+sources := croutine.c event_groups.c list.c queue.c tasks.c timers.c hooks.c port.c heap/heap_$(FREERTOS_HEAP_MANAGER).c
 
 # Make a list of object files
 cfiles = $(filter %.c,$(sources))

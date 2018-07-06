@@ -61,10 +61,10 @@ CLOCK_HZ	= 16000000
 #	1
 #	2
 #   s => Space Optimization
-OPTIMIZATION_LEVEL	= 0
+OPTIMIZATION_LEVEL	= s
 
 FREERTOS_INCLUDE_DIR = FreeRTOS/include
-FREERTOS_LIBRARY_NAME = freertos
+FREERTOS_LIBRARY_NAME = FreeRTOS
 
 # Specify the timer used to generate tick interrupts for FreeRTOS
 FREERTOS_TICK_SOURCE_TIMER = 0
