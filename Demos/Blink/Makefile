@@ -1,13 +1,14 @@
 include ../../target.mk
 
-target = ../../$(DEMOS_DIR)/Blink.hex
+target = ../../$(DEMOS_DIR)/Blink
+elf_target = $(target).elf
 
 #--------------------------------------------------------------------------
 # Do not change things past this point unless you know what you are doing 
 #--------------------------------------------------------------------------
 
 DEFS		= F_CPU=$(CLOCK_HZ) GCC_MEGA_AVR
-INCLUDE		= ../$(FREERTOS_INCLUDE_DIR)
+INCLUDE		= ../../$(FREERTOS_INCLUDE_DIR)
 CC			= avr-gcc
 AR			= avr-ar
 
@@ -48,16 +49,16 @@ objs += $(sobjs)
 
 
 # Compiler flags
-override CFLAGS        = --std=gnu99 -ffunction-sections -fdata-sections -mcall-prologues -mrelax -g -Wall -O$(OPTIMIZATION_LEVEL) -mmcu=$(MCU_TARGET) $(addprefix -D,$(DEFS)) $(addprefix -I,$(INCLUDE))
+override CFLAGS        = -Wl,--gc-sections --std=gnu99 -ffunction-sections -fdata-sections -mcall-prologues -mrelax -g -Wall -O$(OPTIMIZATION_LEVEL) -mmcu=$(MCU_TARGET) $(addprefix -D,$(DEFS)) $(addprefix -I,$(INCLUDE))
 
-$(target): $(objs)
-	$(CC) -o $(target) $(objs) -lgcc
-	# -L../../$(LIBS_DIR) -l$(FREERTOS_LIBRARY_NAME)
+$(elf_target): $(objs)
+	$(CC) -mmcu=$(MCU_TARGET) -o $(elf_target) $(objs) -L ../../$(LIBS_DIR) -l$(FREERTOS_LIBRARY_NAME)
 
 .PHONY:	all clean
 	
-all: $(target)
+all: $(elf_target)
+	avr-size --format=avr --mcu=$(MCU_TARGET) $(elf_target)
 	
 clean:
-	@rm -f $(objs) $(target)
+	@rm -f $(objs) $(target) $(elf_target)
 	@rm -rf *.d

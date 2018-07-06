@@ -6,7 +6,7 @@ LIBNAME		= lib$(FREERTOS_LIBRARY_NAME).a
 # Do not change things past this point unless you know what you are doing 
 #--------------------------------------------------------------------------
 
-DEFS		= F_CPU=$(CLOCK_HZ) GCC_MEGA_AVR portUSE_TIMER$(TICK_SOURCE_TIMER)
+DEFS		= F_CPU=$(CLOCK_HZ) GCC_MEGA_AVR portUSE_TIMER$(FREERTOS_TICK_SOURCE_TIMER)
 INCLUDE		= ../$(FREERTOS_INCLUDE_DIR)
 CC			= avr-gcc
 AR			= avr-ar
@@ -16,7 +16,7 @@ target = ../$(LIBS_DIR)/$(LIBNAME)
 # Sources located at the top of the source tree.
 # Other sources are included by .mk files
 
-sources := croutine.c event_groups.c list.c queue.c tasks.c timers.c
+sources := croutine.c event_groups.c list.c queue.c tasks.c timers.c port.c heap/heap_$(FREERTOS_HEAP_MANAGER).c
 
 # Make a list of object files
 cfiles = $(filter %.c,$(sources))
@@ -30,7 +30,7 @@ objs += $(sobjs)
 
 # override %.S rule to use our CC and CFLAGS
 
-%.o:	%.S	
+%.o: %.S	
 	$(CC) $(CFLAGS) -c $< -o $@ 
 
 
@@ -52,7 +52,7 @@ $(target) : $(objs)
 	@$(AR) -rcs $(target) $(objs)
 	
 # Compiler flags
-override CFLAGS        = --std=gnu99 -ffunction-sections -fdata-sections -mcall-prologues -mrelax -g -Wall -O$(OPTIMIZATION_LEVEL) -mmcu=$(MCU_TARGET) $(addprefix -D,$(DEFS)) $(addprefix -I,$(INCLUDE))
+override CFLAGS        = -Wl,--gc-sections --std=gnu99 -ffunction-sections -fdata-sections -mcall-prologues -mrelax -g -Wall -O$(OPTIMIZATION_LEVEL) -mmcu=$(MCU_TARGET) $(addprefix -D,$(DEFS)) $(addprefix -I,$(INCLUDE))
 
 .PHONY:	all clean
 	

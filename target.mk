@@ -67,7 +67,9 @@ FREERTOS_INCLUDE_DIR = FreeRTOS/include
 FREERTOS_LIBRARY_NAME = freertos
 
 # Specify the timer used to generate tick interrupts for FreeRTOS
-TICK_SOURCE_TIMER = 0
+FREERTOS_TICK_SOURCE_TIMER = 0
+
+FREERTOS_HEAP_MANAGER = 3
 
 # Change this to change target directories
 BUILD_DIR = Build
