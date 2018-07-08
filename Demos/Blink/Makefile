@@ -64,6 +64,6 @@ clean:
 	@rm -rf *.d
 
 flash: $(TARGET).hex $(TARGET).eeprom
-	$(AVRDUDE) -p $(MCU_TARGET_AVRDUDE) -c $(PROGRAMMER) -u -U lfuse:w:$(LFUSE):m -U hfuse:w:$(HFUSE):m -U efuse:w:$(EFUSE):m -U flash:w:$(TARGET).hex:i -U eeprom:w:$(TARGET).eeprom:i
+	$(FLASH_CMD) -U flash:w:$(TARGET).hex:i -U eeprom:w:$(TARGET).eeprom:i
 
 program: flash
