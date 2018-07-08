@@ -23,7 +23,7 @@ void appSetupHook(void) {
 
 void blinkTask(void* pvParameters __attribute__ ((unused))) {
     for (;;) {
-        vTaskDelay( MS_TO_TICKS(10000) );
+        vTaskDelay( portMS_TO_TICKS(10000) );
         
 		// A XOR of the current PORT with FF will flip all bits
         PORTB ^= 0xFF;

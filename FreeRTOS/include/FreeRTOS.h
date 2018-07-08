@@ -1164,6 +1164,6 @@ typedef StaticStreamBuffer_t StaticMessageBuffer_t;
 }
 #endif
 
-#define MS_TO_TICKS(ms) (ms / portTICK_RATE_MS)
+#define portMS_TO_TICKS(ms) (ms / portTICK_RATE_MS)
 
 #endif /* INC_FREERTOS_H */
