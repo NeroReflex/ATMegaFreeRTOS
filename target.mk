@@ -1,8 +1,8 @@
 # ============= Target Specific ================
 # Change this file to meet project specification
 
-MCU_TARGET 	= atmega328p
-#MCU_TARGET      = atmega2560
+MCU_TARGET 	   = atmega328p
+#MCU_TARGET     = atmega2560
 #MCU_TARGET     = atmega2561
 
 MCU_TARGET_AVRDUDE = m328p
@@ -49,5 +49,4 @@ CC_FLAGS = -Wl,--gc-sections --std=gnu99 -ffunction-sections -fdata-sections -fp
 %.eeprom: %.elf
 	$(OBJCOPY) -j .eeprom --change-section-lma .eeprom=0 -O ihex $< $@ 
 
-# append -u if you REALLY want to change fuses
-FLASH_CMD = $(AVRDUDE) -p $(MCU_TARGET_AVRDUDE) -c $(PROGRAMMER) -u
+FLASH_CMD = $(AVRDUDE) -p $(MCU_TARGET_AVRDUDE) -c $(PROGRAMMER)
