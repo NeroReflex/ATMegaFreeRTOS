@@ -16,8 +16,6 @@ StaticTask_t xBlinkTaskBuffer;
 StackType_t xBlinkTaskStack[ 125 + configMINIMAL_STACK_SIZE ];
 void blinkTask(void* pvParameters);
 
-
-
 void appSetupHook(void) {
     DDRB  |= 0xFF;
 	xBlinkTaskHandle = xTaskCreateStatic(blinkTask, "Blink", sizeof(xBlinkTaskStack) / sizeof(StackType_t), NULL, configMAX_PRIORITIES - 2, xBlinkTaskStack, &xBlinkTaskBuffer);
@@ -25,7 +23,7 @@ void appSetupHook(void) {
 
 void blinkTask(void* pvParameters __attribute__ ((unused))) {
     for (;;) {
-        vTaskDelay(35000);
+        vTaskDelay( MS_TO_TICKS(10000) );
         
         PORTB ^= 0xFF;
     }
@@ -34,13 +32,10 @@ void blinkTask(void* pvParameters __attribute__ ((unused))) {
 
 #if ( configUSE_IDLE_HOOK == 1 )
 void appIdleHook(void) {
-	#if defined(__AVR_ATmega2560__) || defined(__AVR_ATmega2561__) || defined(__AVR_ATmega1280__) || defined(__AVR_ATmega640__)
-	// before putting MCU to sleep interrupt MUST be enabled, or it won't wake up
-	//sei();
-	
+	#if defined(__AVR_ATmega2560__) || defined(__AVR_ATmega2561__) || defined(__AVR_ATmega1280__) || defined(__AVR_ATmega640__) || defined(__AVR_ATmega328p__)
 	// put the MCU to sleep, so that only a timer interrupt can wake it up
-	//set_sleep_mode( SLEEP_MODE_IDLE );
-	//sleep_mode();
+	set_sleep_mode( SLEEP_MODE_IDLE );
+	sleep_mode();
 	#endif
 }
 #endif
