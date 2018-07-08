@@ -1,5 +1,5 @@
 /*
-    FreeRTOS V9.0.0 - This file is NOT part of the FreeRTOS distribution.
+    FreeRTOS V10.0.0 - This file is NOT part of the FreeRTOS distribution.
 
     FreeRTOS is free software; you can redistribute it and/or modify it under
     the terms of the GNU General Public License (version 2) as published by the
@@ -74,7 +74,86 @@
 #include "task.h"
 #include "timers.h"
 
+#define FAST_BLINK_DELAY 500
+#define SLOW_BLINK_DELAY 2000
+
 extern void appSetupHook(void);
+
+/*-----------------------------------------------------------*/
+void infiniteFastLedBlink(void);
+void infiniteFastLedBlink(void) {
+    #if defined(__AVR_ATmega640__) || defined(__AVR_ATmega1280__) || defined(__AVR_ATmega1281__) || defined(__AVR_ATmega2560__) || defined(__AVR_ATmega2561__) // Arduino Mega with 2560
+	DDRB  |= _BV(DDB7);
+	PORTB |= _BV(PORTB7);       // Main (red PB7) LED on. Main LED on.
+
+#elif defined(__AVR_ATmega644P__) || defined(__AVR_ATmega644PA__) || defined(__AVR_ATmega1284P__) || defined(__AVR_ATmega1284PA__) // Seeed Goldilocks with 1284p
+	DDRB  |= _BV(DDB7);
+	PORTB |= _BV(PORTB7);       // Main (red PB7) LED on. Main LED on.
+
+#elif defined(__AVR_ATmega328P__) || defined(__AVR_ATmega168__) || defined(__AVR_ATmega8__) // assume we're using an Arduino Uno with 328p
+	DDRB  |= _BV(DDB5);
+	PORTB |= _BV(PORTB5);       // Main (red PB5) LED on. Main LED on.
+
+#elif defined(__AVR_ATmega32U4__) || defined(__AVR_ATmega16U4__) // assume we're using an Arduino Leonardo with 32u4
+	DDRC  |= _BV(DDC7);
+	PORTC |= _BV(PORTC7);       // Main (red PC7) LED on. Main LED on.
+
+#endif
+
+	for(;;)
+	{
+		_delay_ms(FAST_BLINK_DELAY);
+
+#if defined(__AVR_ATmega640__) || defined(__AVR_ATmega1280__) || defined(__AVR_ATmega1281__) || defined(__AVR_ATmega2560__) || defined(__AVR_ATmega2561__)  // Mega with 2560
+		PINB  |= _BV(PINB7);       // Main (red PB7) LED toggle. Main LED fast blink.
+
+#elif defined(__AVR_ATmega644P__) || defined(__AVR_ATmega644PA__) || defined(__AVR_ATmega1284P__) || defined(__AVR_ATmega1284PA__) // Seeed Goldilocks with 1284p
+		PINB  |= _BV(PINB7);       // Main (red PB7) LED toggle. Main LED fast blink.
+
+#elif defined(__AVR_ATmega328P__) || defined(__AVR_ATmega168__) || defined(__AVR_ATmega8__) // assume we're using an Arduino Uno with 328p
+		PINB  |= _BV(PINB5);       // Main (red PB5) LED toggle. Main LED fast blink.
+
+#elif defined(__AVR_ATmega32U4__) || defined(__AVR_ATmega16U4__) // assume we're using an Arduino Leonardo with 32u4
+		PINC  |= _BV(PINC7);       // Main (red PC7) LED toggle. Main LED fast blink.
+
+#endif
+
+	}
+}
+/*-----------------------------------------------------------*/
+
+/*-----------------------------------------------------------*/
+void infiniteSlowLedBlink(void);
+void infiniteSlowLedBlink(void) {
+#if defined(__AVR_ATmega640__) || defined(__AVR_ATmega1280__) || defined(__AVR_ATmega1281__) || defined(__AVR_ATmega2560__) || defined(__AVR_ATmega2561__) // Arduino Mega with 2560
+	DDRB  |= _BV(DDB7);
+	PORTB |= _BV(PORTB7);       // Main (red PB7) LED on. Main LED on.
+#elif defined(__AVR_ATmega644P__) || defined(__AVR_ATmega644PA__) || defined(__AVR_ATmega1284P__) || defined(__AVR_ATmega1284PA__) // Seeed Goldilocks with 1284p
+	DDRB  |= _BV(DDB7);
+	PORTB |= _BV(PORTB7);       // Main (red PB7) LED on. Main LED on.
+#elif defined(__AVR_ATmega328P__) || defined(__AVR_ATmega168__) || defined(__AVR_ATmega8__) // assume we're using an Arduino Uno with 328p
+	DDRB  |= _BV(DDB5);
+	PORTB |= _BV(PORTB5);       // Main (red PB5) LED on. Main LED on.
+#elif defined(__AVR_ATmega32U4__) || defined(__AVR_ATmega16U4__) // assume we're using an Arduino Leonardo with 32u4
+	DDRC  |= _BV(DDC7);
+	PORTC |= _BV(PORTC7);       // Main (red PC7) LED on. Main LED on.
+#endif
+
+	for(;;)
+	{
+		_delay_ms(SLOW_BLINK_DELAY);
+#if defined(__AVR_ATmega640__) || defined(__AVR_ATmega1280__) || defined(__AVR_ATmega1281__) || defined(__AVR_ATmega2560__) || defined(__AVR_ATmega2561__)  // Mega with 2560
+		PINB  |= _BV(PINB7);       // Main (red PB7) LED toggle. Main LED fast blink.
+#elif defined(__AVR_ATmega644P__) || defined(__AVR_ATmega644PA__) || defined(__AVR_ATmega1284P__) || defined(__AVR_ATmega1284PA__) // Seeed Goldilocks with 1284p
+		PINB  |= _BV(PINB7);       // Main (red PB7) LED toggle. Main LED fast blink.
+#elif defined(__AVR_ATmega328P__) || defined(__AVR_ATmega168__) || defined(__AVR_ATmega8__) // assume we're using an Arduino Uno with 328p
+		PINB  |= _BV(PINB5);       // Main (red PB5) LED toggle. Main LED fast blink.
+#elif defined(__AVR_ATmega32U4__) || defined(__AVR_ATmega16U4__) // assume we're using an Arduino Leonardo with 32u4
+		PINC  |= _BV(PINC7);       // Main (red PC7) LED toggle. Main LED fast blink.
+#endif
+	}
+}
+/*-----------------------------------------------------------*/
 
 /*-----------------------------------------------------------*/
 #if ( configUSE_IDLE_HOOK == 1 )
@@ -122,43 +201,7 @@ void vApplicationMallocFailedHook( void )
 	// Call the user-defined hook
 	appMallocFailedHook();
 	
-#if defined(__AVR_ATmega640__) || defined(__AVR_ATmega1280__) || defined(__AVR_ATmega1281__) || defined(__AVR_ATmega2560__) || defined(__AVR_ATmega2561__) // Arduino Mega with 2560
-	DDRB  |= _BV(DDB7);
-	PORTB |= _BV(PORTB7);       // Main (red PB7) LED on. Main LED on.
-
-#elif defined(__AVR_ATmega644P__) || defined(__AVR_ATmega644PA__) || defined(__AVR_ATmega1284P__) || defined(__AVR_ATmega1284PA__) // Seeed Goldilocks with 1284p
-	DDRB  |= _BV(DDB7);
-	PORTB |= _BV(PORTB7);       // Main (red PB7) LED on. Main LED on.
-
-#elif defined(__AVR_ATmega328P__) || defined(__AVR_ATmega168__) || defined(__AVR_ATmega8__) // assume we're using an Arduino Uno with 328p
-	DDRB  |= _BV(DDB5);
-	PORTB |= _BV(PORTB5);       // Main (red PB5) LED on. Main LED on.
-
-#elif defined(__AVR_ATmega32U4__) || defined(__AVR_ATmega16U4__) // assume we're using an Arduino Leonardo with 32u4
-	DDRC  |= _BV(DDC7);
-	PORTC |= _BV(PORTC7);       // Main (red PC7) LED on. Main LED on.
-
-#endif
-
-	for(;;)
-	{
-		_delay_ms(50);
-
-#if defined(__AVR_ATmega640__) || defined(__AVR_ATmega1280__) || defined(__AVR_ATmega1281__) || defined(__AVR_ATmega2560__) || defined(__AVR_ATmega2561__)  // Mega with 2560
-		PINB  |= _BV(PINB7);       // Main (red PB7) LED toggle. Main LED fast blink.
-
-#elif defined(__AVR_ATmega644P__) || defined(__AVR_ATmega644PA__) || defined(__AVR_ATmega1284P__) || defined(__AVR_ATmega1284PA__) // Seeed Goldilocks with 1284p
-		PINB  |= _BV(PINB7);       // Main (red PB7) LED toggle. Main LED fast blink.
-
-#elif defined(__AVR_ATmega328P__) || defined(__AVR_ATmega168__) || defined(__AVR_ATmega8__) // assume we're using an Arduino Uno with 328p
-		PINB  |= _BV(PINB5);       // Main (red PB5) LED toggle. Main LED fast blink.
-
-#elif defined(__AVR_ATmega32U4__) || defined(__AVR_ATmega16U4__) // assume we're using an Arduino Leonardo with 32u4
-		PINC  |= _BV(PINC7);       // Main (red PC7) LED toggle. Main LED fast blink.
-
-#endif
-
-	}
+    infiniteFastLedBlink();
 }
 
 #endif /* configUSE_MALLOC_FAILED_HOOK == 1 */
@@ -187,43 +230,8 @@ void vApplicationStackOverflowHook( TaskHandle_t xTask, portCHAR *pcTaskName )
 {
 	// Call the user-defined hook
 	appStackOverflowHook(xTask, pcTaskName);
-	
-#if defined(__AVR_ATmega640__) || defined(__AVR_ATmega1280__) || defined(__AVR_ATmega1281__) || defined(__AVR_ATmega2560__) || defined(__AVR_ATmega2561__)  // Arduino Mega with 2560
-	DDRB  |= _BV(DDB7);
-	PORTB |= _BV(PORTB7);       // Main (red PB7) LED on. Main LED on.
 
-#elif defined(__AVR_ATmega644P__) || defined(__AVR_ATmega644PA__) || defined(__AVR_ATmega1284P__) || defined(__AVR_ATmega1284PA__) // Seeed Goldilocks with 1284p
-	DDRB  |= _BV(DDB7);
-	PORTB |= _BV(PORTB7);       // Main (red PB7) LED on. Main LED on.
-
-#elif defined(__AVR_ATmega328P__) || defined(__AVR_ATmega168__) || defined(__AVR_ATmega8__) // assume we're using an Arduino Uno with 328p
-	DDRB  |= _BV(DDB5);
-	PORTB |= _BV(PORTB5);       // Main (red PB5) LED on. Main LED on.
-
-#elif defined(__AVR_ATmega32U4__) || defined(__AVR_ATmega16U4__) // assume we're using an Arduino Leonardo with 32u4
-	DDRC  |= _BV(DDC7);
-	PORTC |= _BV(PORTC7);       // Main (red PC7) LED on. Main LED on.
-
-#endif
-
-	for(;;)
-	{
-		_delay_ms(2000);
-
-#if defined(__AVR_ATmega640__) || defined(__AVR_ATmega1280__) || defined(__AVR_ATmega1281__) || defined(__AVR_ATmega2560__) || defined(__AVR_ATmega2561__)  // Arduino Mega with 2560
-		PINB  |= _BV(PINB7);       // Main (red PB7) LED toggle. Main LED slow blink.
-
-#elif defined(__AVR_ATmega644P__) || defined(__AVR_ATmega644PA__) || defined(__AVR_ATmega1284P__) || defined(__AVR_ATmega1284PA__) // Seeed Goldilocks with 1284p
-		PINB  |= _BV(PINB7);       // Main (red PB7) LED toggle. Main LED slow blink.
-
-#elif defined(__AVR_ATmega328P__) || defined(__AVR_ATmega168__) || defined(__AVR_ATmega8__) // assume we're using an Arduino Uno with 328p
-		PINB  |= _BV(PINB5);       // Main (red PB5) LED toggle. Main LED slow blink.
-
-#elif defined(__AVR_ATmega32U4__) || defined(__AVR_ATmega16U4__) // assume we're using an Arduino Leonardo with 32u4
-		PINC  |= _BV(PINC7);       // Main (red PC7) LED toggle. Main LED slow blink.
-
-#endif
-	}
+    infiniteSlowLedBlink();
 }
 
 #endif /* configCHECK_FOR_STACK_OVERFLOW >= 1 */
@@ -271,15 +279,14 @@ void vApplicationGetTimerTaskMemory( StaticTask_t **ppxTimerTaskTCBBuffer,
 
 /*-----------------------------------------------------------*/
 
-int main() __attribute__ ((OS_main));
-int main()
+int main(int argc, char** argv) /*__attribute__ ((OS_main))*/;
+int main(int argc __attribute__ ((unused)), char** argv __attribute__ ((unused)))
 {
 	appSetupHook();		// execute the function that will setup tasks and OS structures.
 
 	vTaskStartScheduler(); // initialise and run the freeRTOS scheduler. Execution should never return here.
 
 	vApplicationMallocFailedHook(); // Probably we've failed trying to initialise heap for the scheduler. Let someone know.
-	
 	
 	// This should NOT be executed
 	return 1;

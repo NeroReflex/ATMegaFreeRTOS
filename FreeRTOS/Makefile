@@ -1,22 +1,16 @@
 include ../target.mk
 
-LIBNAME		= lib$(FREERTOS_LIBRARY_NAME).a
+LIBNAME	= lib$(FREERTOS_LIBRARY_NAME).a
+TARGET = ../$(LIBS_DIR)/$(LIBNAME)
 
-#--------------------------------------------------------------------------
-# Do not change things past this point unless you know what you are doing 
-#--------------------------------------------------------------------------
-
-DEFS		= F_CPU=$(CLOCK_HZ) GCC_MEGA_AVR portUSE_TIMER$(FREERTOS_TICK_SOURCE_TIMER)
+DEFS		= F_CPU=$(CLOCK_HZ)UL GCC_MEGA_AVR portUSE_TIMER$(FREERTOS_TICK_SOURCE_TIMER)
 INCLUDE		= ../$(FREERTOS_INCLUDE_DIR)
-CC			= avr-gcc
-AR			= avr-ar
 
-target = ../$(LIBS_DIR)/$(LIBNAME)
+# Compiler flags
+override CFLAGS   = $(CC_FLAGS) $(addprefix -D,$(DEFS)) $(addprefix -I,$(INCLUDE))
 
-# Sources located at the top of the source tree.
-# Other sources are included by .mk files
-
-sources := croutine.c event_groups.c list.c queue.c tasks.c timers.c hooks.c port.c heap/heap_$(FREERTOS_HEAP_MANAGER).c
+# Sources list
+sources := heap_$(FREERTOS_HEAP_MANAGER).c croutine.c event_groups.c list.c queue.c tasks.c timers.c hooks.c port.c
 
 # Make a list of object files
 cfiles = $(filter %.c,$(sources))
@@ -29,18 +23,15 @@ objs = $(cobjs)
 objs += $(sobjs)
 
 # override %.S rule to use our CC and CFLAGS
-
-%.o: %.S	
+%.o: %.S
 	$(CC) $(CFLAGS) -c $< -o $@ 
-
 
 # pull in dependency info for *existing* .o files
 -include $(OBJS:.o=.d)
 
 # compile and create dependencies as we go
-
 %.o: %.c
-	$(CC)  -c $(CFLAGS) $*.c -o $*.o
+	$(CC) -c $(CFLAGS) $*.c -o $*.o
 	@$(CC) -MM $(CFLAGS) $*.c > $*.d
 	@mv -f $*.d $*.d.tmp
 	@sed -e 's|.*:|$*.o:|' < $*.d.tmp > $*.d
@@ -48,16 +39,13 @@ objs += $(sobjs)
 	sed -e 's/^ *//' -e 's/$$/:/' >> $*.d
 	@rm -f $*.d.tmp
 
-$(target) : $(objs)
-	@$(AR) -rcs $(target) $(objs)
-	
-# Compiler flags
-override CFLAGS        = -Wl,--gc-sections --std=gnu99 -ffunction-sections -fdata-sections -mcall-prologues -mrelax -g -Wall -O$(OPTIMIZATION_LEVEL) -mmcu=$(MCU_TARGET) $(addprefix -D,$(DEFS)) $(addprefix -I,$(INCLUDE))
+$(TARGET): $(objs)
+	@$(AR) -rcs $(TARGET) $(objs)
 
 .PHONY:	all clean
-	
-all: $(target)
+
+all: $(TARGET)
 
 clean:
-	@rm -f $(objs) $(target)
+	@rm -f $(objs) $(TARGET)
 	@rm -rf *.d

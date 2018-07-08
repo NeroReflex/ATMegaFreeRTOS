@@ -1,16 +1,13 @@
 include ../../target.mk
 
-target = ../../$(DEMOS_DIR)/Blink
-elf_target = $(target).elf
+TARGET = ../../$(DEMOS_DIR)/Blink
 
 #--------------------------------------------------------------------------
 # Do not change things past this point unless you know what you are doing 
 #--------------------------------------------------------------------------
 
-DEFS		= F_CPU=$(CLOCK_HZ) GCC_MEGA_AVR
+DEFS		= F_CPU=$(CLOCK_HZ)UL GCC_MEGA_AVR
 INCLUDE		= ../../$(FREERTOS_INCLUDE_DIR)
-CC			= avr-gcc
-AR			= avr-ar
 
 # Sources located at the top of the source tree.
 # Other sources are included by .mk files
@@ -49,16 +46,24 @@ objs += $(sobjs)
 
 
 # Compiler flags
-override CFLAGS        = -Wl,--gc-sections --std=gnu99 -ffunction-sections -fdata-sections -mcall-prologues -mrelax -g -Wall -O$(OPTIMIZATION_LEVEL) -mmcu=$(MCU_TARGET) $(addprefix -D,$(DEFS)) $(addprefix -I,$(INCLUDE))
+override CFLAGS   = $(CC_FLAGS) $(addprefix -D,$(DEFS)) $(addprefix -I,$(INCLUDE))
+override LDFLAGS  = -Wl,--gc-sections,-Map,$(TARGET).map 
 
-$(elf_target): $(objs)
-	$(CC) -mmcu=$(MCU_TARGET) -o $(elf_target) $(objs) -L ../../$(LIBS_DIR) -l$(FREERTOS_LIBRARY_NAME)
+$(TARGET).elf: $(objs)
+	$(CC) $(LDFLAGS) -mmcu=$(MCU_TARGET) -o $(TARGET).elf $(objs) -L ../../$(LIBS_DIR) -l$(FREERTOS_LIBRARY_NAME)
 
-.PHONY:	all clean
-	
-all: $(elf_target)
-	avr-size --format=avr --mcu=$(MCU_TARGET) $(elf_target)
-	
+$(TARGET).hex: $(TARGET).elf
+
+.PHONY:	all clean flash program
+
+all: $(TARGET).hex $(TARGET).eeprom
+	$(SIZE) --format=avr --mcu=$(MCU_TARGET) $(TARGET).elf
+
 clean:
-	@rm -f $(objs) $(target) $(elf_target)
+	@rm -f $(objs) $(TARGET).elf $(TARGET).hex $(TARGET).eeprom $(TARGET).map
 	@rm -rf *.d
+
+flash: $(TARGET).hex $(TARGET).eeprom
+	$(AVRDUDE) -p $(MCU_TARGET_AVRDUDE) -c $(PROGRAMMER) -u -U lfuse:w:$(LFUSE):m -U hfuse:w:$(HFUSE):m -U efuse:w:$(EFUSE):m -U flash:w:$(TARGET).hex:i -U eeprom:w:$(TARGET).eeprom:i
+
+program: flash
