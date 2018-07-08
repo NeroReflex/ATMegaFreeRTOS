@@ -2,8 +2,6 @@
 #include <avr/sleep.h>
 #include <avr/interrupt.h>
 
-#include <util/delay.h>
-
 #include "FreeRTOS.h" /* RTOS main include file and configuration */
 #include "task.h"     /* RTOS task related API prototypes. */
 #include "queue.h"    /* RTOS queue related API prototypes. */
@@ -17,7 +15,9 @@ StackType_t xBlinkTaskStack[ 125 + configMINIMAL_STACK_SIZE ];
 void blinkTask(void* pvParameters);
 
 void appSetupHook(void) {
-    DDRB  |= 0xFF;
+    //many Arduino/Genuino shields have an onboard led on PORTB
+	DDRB  |= 0xFF;
+
 	xBlinkTaskHandle = xTaskCreateStatic(blinkTask, "Blink", sizeof(xBlinkTaskStack) / sizeof(StackType_t), NULL, configMAX_PRIORITIES - 2, xBlinkTaskStack, &xBlinkTaskBuffer);
 }
 
@@ -25,6 +25,7 @@ void blinkTask(void* pvParameters __attribute__ ((unused))) {
     for (;;) {
         vTaskDelay( MS_TO_TICKS(10000) );
         
+		// A XOR of the current PORT with FF will flip all bits
         PORTB ^= 0xFF;
     }
 }
